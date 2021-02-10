@@ -17,7 +17,7 @@ async function fetchUsers() {
 
 const createUserCard = () => {
     const divGallery = document.getElementById('gallery');
-    
+    for (let i = 0; i < 12; i++) {
     html = `
     <div class="card">
         <div class="card-img-container">
@@ -31,7 +31,7 @@ const createUserCard = () => {
     </div>
     `;
     divGallery.insertAdjacentHTML('beforeend', html);
-    
+    }
 }
 
 //FUNCTION CALLS
