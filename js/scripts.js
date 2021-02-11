@@ -49,12 +49,15 @@ const createModal = (user) => {
             <p class="modal-text">${user.location.street.number} ${user.location.street.name}, ${user.location.city}, ${user.location.state} ${user.location.postcode}</p>
             <p class="modal-text">Birthday: ${DOB}</p>
         </div>
-    </div>
-    `;
+        <div class="modal-btn-container">
+            <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+            <button type="button" id="modal-next" class="modal-next btn">Next</button>
+        </div>
+    </div>`;
     document.getElementById('gallery').insertAdjacentHTML('beforeend', html);
-    document.getElementById('modal-close-btn').addEventListener('click', (e) => { 
-        document.getElementsByClassName('modal-container')[0].remove();
-    })
+    if (user === userList[0]) {document.getElementById('modal-prev').style.display = 'none'};
+    if (user === userList[11]) {document.getElementById('modal-next').style.display = 'none'};
+    modalButtonListeners();
 }
 
 //Adds click functionality to user cards to call createModal function and display the appropriate user info
@@ -83,6 +86,36 @@ const formatDOB = (DOB) => {
     const regex = /^([0-9]{4})([0-9]{2})([0-9]{2})$/g
     return trimDOB.replace(regex, '$2/$3/$1');
 }
+
+const modalButtonListeners = () => {
+    let name = document.querySelector("div.modal-info-container > #name"); 
+    let prevBtn = document.getElementById('modal-prev');
+    let nextBtn = document.getElementById('modal-next');
+    document.getElementById('modal-close-btn').addEventListener('click', (e) => { 
+        removeModalWindow();
+    })
+    prevBtn.addEventListener('click', (e) => { 
+        for (let i = 1; i < 12; i++) { 
+            if (name.textContent === `${userList[i].name.first} ${userList[i].name.last}`) {
+                removeModalWindow();
+                createModal(userList[i-1])
+            }
+        }
+    } 
+)    
+    nextBtn.addEventListener('click', (e) => { 
+        for (let i = 0; i < 11; i++) { 
+            if (name.textContent === `${userList[i].name.first} ${userList[i].name.last}`) {
+                removeModalWindow();
+                createModal(userList[i+1])
+            }
+        }
+    })
+}
+
+const removeModalWindow = () => {
+    document.getElementsByClassName('modal-container')[0].remove();
+};
 
 //FUNCTION CALLS
 fetchUsers();
