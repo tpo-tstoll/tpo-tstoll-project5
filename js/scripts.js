@@ -3,8 +3,6 @@ const userList = [];
 
 //FUNCTIONS
 
-
-
 //Fetch 12 user objects and push to an array, then calls setupUsers function to populate the page
 async function fetchUsers() {
     await fetch('https://randomuser.me/api/?nat=us&results=12')
@@ -19,6 +17,7 @@ const setUpUsers = (users) => {
     modalEventListener();
     document.body.style.backgroundImage = 'linear-gradient(lightblue, royalblue)';
     users.map(user => createUserCard(user));
+    addSearch();
 }
 
 //Displays individual User Card HTML elements based upon userList array
@@ -125,6 +124,48 @@ const modalButtonListeners = () => {
 const removeModalWindow = () => {
     document.getElementsByClassName('modal-container')[0].remove();
 };
+
+//Search Bar added to page and event listener function called
+const addSearch = () => {
+    const searchHTML = `
+        <form action="#" method="get">
+            <input type="search" id="search-input" class="search-input" placeholder="Search...">
+            <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
+        </form>`;
+    document.querySelector('div.search-container').insertAdjacentHTML('beforeend', searchHTML);
+    seachListener();
+
+}
+
+//Function to filter search results and display matching cards
+const executeSearch = (input) => {
+    const cardContainer = document.querySelectorAll(".card-info-container");
+    for (let i = 0; i < userList.length; i++) {
+        let cardName = cardContainer[i].firstElementChild;
+        let firstName = userList[i].name.first.toUpperCase();
+        let lastName = userList[i].name.last.toUpperCase();
+        let fullName = `${firstName} ${lastName}`;
+        if (firstName.includes(input.toUpperCase()) || lastName.includes(input.toUpperCase()) || fullName.includes(input.toUpperCase())) {
+            cardContainer[i].parentElement.style.display = "";
+        } else {
+            cardContainer[i].parentElement.style.display = "none";
+        }
+    }
+}
+
+//Function that holds listeners for the search bar
+const seachListener = () => {
+    let searchBar = document.querySelector('input.search-input')
+    let searchBtn = document.querySelector('input.search-submit')
+    searchBar.addEventListener('keyup', (e) => {
+        e.preventDefault();
+        executeSearch(searchBar.value);
+     });
+     searchBtn.addEventListener('click', (e) => {
+         e.preventDefault();
+         executeSearch(searchBar.value);
+      });
+}
 
 //FUNCTION CALLS
 fetchUsers();
