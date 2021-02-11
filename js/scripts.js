@@ -3,15 +3,22 @@ const userList = [];
 
 //FUNCTIONS
 
-//Fetch 12 user objects and push to an array, then calls createUserCard function, then triggers the modal event listener for functionality
+
+
+//Fetch 12 user objects and push to an array, then calls setupUsers function to populate the page
 async function fetchUsers() {
-    for (let i = 0; i < 12; i++) {
-        await fetch('https://randomuser.me/api/?nat=us')
-            .then(res => res.json())
-            .then(data => userList.push(data.results[0]))
-        createUserCard(userList[i]);
-    }
+    await fetch('https://randomuser.me/api/?nat=us&results=12')
+        .then(res => res.json())
+        .then(data => data.results.map(elem => userList.push(elem)));
+    await setUpUsers(userList);
+}
+
+
+//Setup users calls the createUser function an
+const setUpUsers = (users) => {
     modalEventListener();
+    document.body.style.backgroundImage = 'linear-gradient(lightblue, royalblue)';
+    users.map(user => createUserCard(user));
 }
 
 //Displays individual User Card HTML elements based upon userList array
@@ -31,7 +38,7 @@ const createUserCard = (user) => {
     document.getElementById('gallery').insertAdjacentHTML('beforeend', html);
 }
 
-//Creates Modal HTML and formats user information. Creates event listener when open to close modal window.
+//Creates Modal HTML and formats user information. Calls event listener to handle button actions.
 const createModal = (user) => {
     let phoneNumber = formatTelephone(`${user.cell}`);
     let DOB = formatDOB(`${user.dob.date}`);
@@ -65,7 +72,7 @@ const modalEventListener = () => {
     document.getElementById('gallery').addEventListener('click', (e) => {
         let cards = document.getElementsByClassName('card');
         let content = e.target.parentElement;
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < cards.length; i++) {
         if (e.target === cards[i] || content === cards[i] || content.parentElement === cards[i]) {
             createModal(userList[i]);
         }
@@ -87,6 +94,7 @@ const formatDOB = (DOB) => {
     return trimDOB.replace(regex, '$2/$3/$1');
 }
 
+//Adds click listeners to all buttons in the modal window
 const modalButtonListeners = () => {
     let name = document.querySelector("div.modal-info-container > #name"); 
     let prevBtn = document.getElementById('modal-prev');
@@ -95,7 +103,7 @@ const modalButtonListeners = () => {
         removeModalWindow();
     })
     prevBtn.addEventListener('click', (e) => { 
-        for (let i = 1; i < 12; i++) { 
+        for (let i = 1; i < userList.length; i++) { 
             if (name.textContent === `${userList[i].name.first} ${userList[i].name.last}`) {
                 removeModalWindow();
                 createModal(userList[i-1])
@@ -104,7 +112,7 @@ const modalButtonListeners = () => {
     } 
 )    
     nextBtn.addEventListener('click', (e) => { 
-        for (let i = 0; i < 11; i++) { 
+        for (let i = 0; i < userList.length; i++) { 
             if (name.textContent === `${userList[i].name.first} ${userList[i].name.last}`) {
                 removeModalWindow();
                 createModal(userList[i+1])
@@ -113,6 +121,7 @@ const modalButtonListeners = () => {
     })
 }
 
+//Function to remove the modal winow
 const removeModalWindow = () => {
     document.getElementsByClassName('modal-container')[0].remove();
 };
